@@ -21,11 +21,11 @@ jobs:
       with:
         go-version: '1.22.0'
 
-    - name: Build
-      run: go build -v ./Castor/Castor.go
+    - name: Build Castor package
+      run: go build -v ./Castor
 
-    - name: Build
-      run: go build -v ./Pollux/Pollux.go
+    - name: Build Pollux package
+      run: go build -v ./Pollux
 
     # - name: Test
     #   run: go test -v ./...
