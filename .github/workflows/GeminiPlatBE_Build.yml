@@ -1,6 +1,3 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
 name: GeminiPlatBE_Build
 
 on:
@@ -10,7 +7,6 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     steps:
@@ -21,11 +17,12 @@ jobs:
       with:
         go-version: '1.22.0'
 
-    - name: Build Castor package
-      run: go build -v ./Castor
+    - name: Build Castor
+      run: |
+        mkdir -p bin
+        go build -v -o bin/Castor ./Castor
 
-    - name: Build Pollux package
-      run: go build -v ./Pollux
-
-    # - name: Test
-    #   run: go test -v ./...
+    - name: Build Pollux
+      run: |
+        mkdir -p bin
+        go build -v -o bin/Pollux ./Pollux
