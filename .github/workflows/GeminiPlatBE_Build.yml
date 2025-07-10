@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
@@ -26,47 +29,11 @@ jobs:
           mkdir -p bin
           go build -v -o bin/Pollux ./Pollux
 
-      - name: Get Release Upload URL
-        id: get_release
-        uses: actions/github-script@v7
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          script: |
-            const tag = process.env.GITHUB_REF.split("/").pop();
-            const { data: releases } = await github.rest.repos.listReleases({
-              owner: context.repo.owner,
-              repo: context.repo.repo
-            });
-            let release = releases.find(r => r.tag_name === tag);
-            if (!release) {
-              // Create release if not exists
-              const { data } = await github.rest.repos.createRelease({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                tag_name: tag,
-                name: `Release ${tag}`,
-                draft: false,
-                prerelease: false
-              });
-              release = data;
-            }
-            core.setOutput('upload_url', release.upload_url);
-
-      - name: Upload Castor binary
-        uses: actions/upload-release-asset@v1
+          files: |
+            ./bin/Castor
+            ./bin/Pollux
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./bin/Castor
-          asset_name: Castor
-          asset_content_type: application/octet-stream
-
-      - name: Upload Pollux binary
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./bin/Pollux
-          asset_name: Pollux
-          asset_content_type: application/octet-stream
