@@ -1,0 +1,25 @@
+version: "1"
+
+services:
+  db:
+    image: "mariadb"
+    environment:
+      MARIADB_ROOT_PASSWORD: geminiplat
+      MARIADB_DATABASE: CastorDB
+      MARIADB_USER: Castor
+      MARIADB_PASSWORD: geminiplat
+    volumes:
+      - ./castor_ddl.sql:/docker-entrypoint-initdb.d/castor_ddl.sql
+    ports:
+      - "3306:3306"
+    restart:
+        always
+
+  web:
+    image: "nginx"
+    depends_on:
+      - db
+    ports:
+      - "80:80"
+    restart:
+        always
